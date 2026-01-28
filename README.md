@@ -17,7 +17,8 @@ A simple command-line tool for querying [NavigatorAI](https://it.ufl.edu/ai) LLM
 
 ```bash
 # Navigate to this directory
-cd lecture-outlines/day7-prompting/navigator-cli
+git clone https://github.com/cegme/navigator-cli.git
+cd navigator-cli/
 
 # Copy the environment template and add your API key
 cp .env.example .env
