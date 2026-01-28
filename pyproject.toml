@@ -1,0 +1,64 @@
+[project]
+name = "navigator-cli"
+version = "1.0.0"
+description = "Simple CLI for querying NavigatorAI LLMs with Chain-of-Thought prompting support"
+readme = "README.md"
+license = {text = "GPL-3.0-or-later"}
+authors = [
+    {name = "Christan Grant", email = "christan@ufl.edu"}
+]
+maintainers = [
+    {name = "Christan Grant", email = "christan@ufl.edu"}
+]
+keywords = [
+    "llm",
+    "cli",
+    "navigator",
+    "openai",
+    "chain-of-thought",
+    "prompting",
+    "ai",
+    "gpt",
+    "university-of-florida",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Utilities",
+    "Typing :: Typed",
+]
+requires-python = ">=3.11"
+dependencies = [
+    "requests>=2.31",
+    "python-dotenv>=1.0",
+    "loguru>=0.7",
+]
+
+[project.urls]
+Homepage = "https://github.com/cegme/navigator-cli"
+Documentation = "https://docs.ai.it.ufl.edu/"
+Repository = "https://github.com/cegme/navigator-cli"
+Issues = "https://github.com/cegme/navigator-cli/issues"
+"NavigatorAI" = "https://it.ufl.edu/ai"
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+]
