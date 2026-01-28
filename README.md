@@ -1,6 +1,17 @@
 # NavigatorAI CLI
 
-A simple command-line tool for querying NavigatorAI LLMs using Python and uv.
+[![CI](https://github.com/cegme/navigator-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/cegme/navigator-cli/actions/workflows/ci.yml)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![uv](https://img.shields.io/badge/uv-package%20manager-blueviolet)](https://docs.astral.sh/uv/)
+
+A simple command-line tool for querying [NavigatorAI](https://it.ufl.edu/ai) LLMs using Python and uv.
+
+## Links
+
+- [NavigatorAI Portal](https://it.ufl.edu/ai) - UF's AI platform
+- [Navigator Toolkit Documentation](https://docs.ai.it.ufl.edu/) - API documentation
+- [NavigatorAI Chat](https://chat.ai.it.ufl.edu/) - Web interface
 
 ## Setup
 
@@ -18,7 +29,7 @@ uv sync
 
 ## Get Your API Key
 
-1. Go to https://ai.it.ufl.edu
+1. Go to https://it.ufl.edu/ai
 2. Log in with your GatorLink credentials
 3. Navigate to Navigator Toolkit → API Keys
 4. Create a new API key and copy it to your `.env` file
@@ -80,6 +91,12 @@ cat prompt.txt | uv run python navigator_cli.py --stdin
 uv run python navigator_cli.py -v "Debug this query"
 ```
 
+### List Available Models
+
+```bash
+uv run python navigator_cli.py --list-models
+```
+
 ## Options
 
 | Option | Short | Description |
@@ -88,6 +105,7 @@ uv run python navigator_cli.py -v "Debug this query"
 | `--system` | `-s` | Set a system prompt |
 | `--model` | `-m` | Choose model (default: gpt-4o) |
 | `--temperature` | `-t` | Set temperature 0.0-2.0 (default: 0.7) |
+| `--list-models` | `-l` | List available models and exit |
 | `--stdin` | | Read prompt from stdin |
 | `--verbose` | `-v` | Enable debug logging |
 
@@ -143,4 +161,4 @@ All tests mock the API calls, so no API key is needed to run them.
 
 **Error: 401 Unauthorized**
 - Your API key may be invalid or expired
-- Generate a new key at https://ai.it.ufl.edu
+- Generate a new key at https://it.ufl.edu/ai
