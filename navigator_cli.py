@@ -12,6 +12,7 @@ Usage:
 import argparse
 import os
 import sys
+import time
 
 import requests
 from dotenv import load_dotenv
@@ -20,6 +21,34 @@ from loguru import logger
 # Configure loguru to only show warnings and above by default
 logger.remove()
 logger.add(sys.stderr, level="WARNING")
+
+
+# ANSI color codes for terminal output
+class Colors:
+    """ANSI color codes for terminal output."""
+
+    CYAN = "\033[96m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    DIM = "\033[2m"
+    BOLD = "\033[1m"
+    RESET = "\033[0m"
+
+    @classmethod
+    def disable(cls):
+        """Disable colors (for non-TTY output)."""
+        cls.CYAN = ""
+        cls.GREEN = ""
+        cls.YELLOW = ""
+        cls.DIM = ""
+        cls.BOLD = ""
+        cls.RESET = ""
+
+
+# Disable colors if stderr is not a TTY
+if not sys.stderr.isatty():
+    Colors.disable()
+
 
 # NavigatorAI API endpoints (OpenAI-compatible)
 NAVIGATOR_BASE_URL = "https://api.ai.it.ufl.edu/v1"
@@ -205,7 +234,12 @@ Examples:
     parser.add_argument(
         "--verbose", "-v",
         action="store_true",
-        help="Enable verbose logging",
+        help="Enable verbose logging to stdout",
+    )
+    parser.add_argument(
+        "--quiet", "-q",
+        action="store_true",
+        help="Only output the LLM response (suppress all other output)",
     )
     parser.add_argument(
         "--list-models", "-l",
@@ -215,18 +249,23 @@ Examples:
 
     args = parser.parse_args()
 
-    # Enable verbose logging if requested
-    if args.verbose:
+    # Configure logging based on verbosity flags
+    if args.quiet:
+        # Suppress all logging in quiet mode
         logger.remove()
-        logger.add(sys.stderr, level="DEBUG")
+    elif args.verbose:
+        # Verbose mode: DEBUG level to stdout
+        logger.remove()
+        logger.add(sys.stdout, level="DEBUG")
 
     # Get API key from environment
     api_key = os.getenv("NAVIGATOR_API_KEY")
     if not api_key:
         logger.error("NAVIGATOR_API_KEY not set. Create a .env file or export it.")
-        print("Error: NAVIGATOR_API_KEY not set.", file=sys.stderr)
-        print("Create a .env file with: NAVIGATOR_API_KEY=your-key-here", file=sys.stderr)
-        print("Or export it: export NAVIGATOR_API_KEY=your-key-here", file=sys.stderr)
+        if not args.quiet:
+            print("Error: NAVIGATOR_API_KEY not set.", file=sys.stderr)
+            print("Create a .env file with: NAVIGATOR_API_KEY=your-key-here", file=sys.stderr)
+            print("Or export it: export NAVIGATOR_API_KEY=your-key-here", file=sys.stderr)
         sys.exit(1)
 
     # Handle --list-models
@@ -237,11 +276,13 @@ Examples:
             sys.exit(0)
         except requests.exceptions.HTTPError as e:
             logger.error(f"Failed to fetch models: {e}")
-            print(f"Error: Failed to fetch models - {e}", file=sys.stderr)
+            if not args.quiet:
+                print(f"Error: Failed to fetch models - {e}", file=sys.stderr)
             sys.exit(1)
         except requests.exceptions.ConnectionError:
             logger.error("Could not connect to NavigatorAI API")
-            print("Error: Could not connect to NavigatorAI API.", file=sys.stderr)
+            if not args.quiet:
+                print("Error: Could not connect to NavigatorAI API.", file=sys.stderr)
             sys.exit(1)
 
     # Get prompt from stdin or argument
@@ -254,10 +295,12 @@ Examples:
         sys.exit(1)
 
     if not prompt:
-        print("Error: No prompt provided.", file=sys.stderr)
+        if not args.quiet:
+            print("Error: No prompt provided.", file=sys.stderr)
         sys.exit(1)
 
     try:
+        start_time = time.time()
         response = query_llm(
             prompt=prompt,
             api_key=api_key,
@@ -266,19 +309,39 @@ Examples:
             use_cot=args.cot,
             temperature=args.temperature,
         )
+        elapsed_time = time.time() - start_time
+
+        # Output model name and time to stderr (unless quiet mode)
+        if not args.quiet:
+            model_str = f"{Colors.CYAN}{args.model}{Colors.RESET}"
+            time_str = f"{Colors.GREEN}{elapsed_time:.2f}s{Colors.RESET}"
+            print(f"{Colors.DIM}Model:{Colors.RESET} {model_str} {Colors.DIM}|{Colors.RESET} {Colors.DIM}Time:{Colors.RESET} {time_str}", file=sys.stderr)
+
+        # Log additional info in verbose mode
+        if args.verbose:
+            logger.info(f"Prompt: {prompt[:100]}{'...' if len(prompt) > 100 else ''}")
+            logger.info(f"Temperature: {args.temperature}")
+            if args.system:
+                logger.info(f"System prompt: {args.system[:50]}{'...' if len(args.system) > 50 else ''}")
+            if args.cot:
+                logger.info("Chain-of-Thought enabled")
+
         print(response)
     except requests.exceptions.HTTPError as e:
         logger.error(f"API request failed: {e}")
-        print(f"Error: API request failed - {e}", file=sys.stderr)
+        if not args.quiet:
+            print(f"Error: API request failed - {e}", file=sys.stderr)
         sys.exit(1)
     except requests.exceptions.ConnectionError:
         logger.error("Could not connect to NavigatorAI API")
-        print("Error: Could not connect to NavigatorAI API.", file=sys.stderr)
-        print("Check your internet connection and API endpoint.", file=sys.stderr)
+        if not args.quiet:
+            print("Error: Could not connect to NavigatorAI API.", file=sys.stderr)
+            print("Check your internet connection and API endpoint.", file=sys.stderr)
         sys.exit(1)
     except KeyError as e:
         logger.error(f"Unexpected API response format: {e}")
-        print(f"Error: Unexpected API response format - {e}", file=sys.stderr)
+        if not args.quiet:
+            print(f"Error: Unexpected API response format - {e}", file=sys.stderr)
         sys.exit(1)
 
 
