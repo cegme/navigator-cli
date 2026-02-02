@@ -243,34 +243,21 @@ uv run python -m navigator_cli \
 
 ### MCP Architecture
 
-```
- User Prompt
-      |
-      v
- navigator_cli.py  --mcp-server server.py
-      |
-      +--> Spawns MCP server subprocess (stdio transport)
-      +--> Discovers tools via session.list_tools()
-      |
-      v
- mcp_client.run_with_tools()
-      |
-      +--> Sends prompt + tool schemas to NavigatorAI API
-      |
-      v
- NavigatorAI API (OpenAI-compatible)
-      |
-      +--> Returns tool_calls or final text
-      |
-      v
- mcp_client (tool-call loop)
-      |
-      +--> Calls tools on MCP server via session.call_tool()
-      +--> Feeds results back to API
-      +--> Repeats until final text answer (max 5 rounds)
-      |
-      v
- Final Response (printed to stdout)
+```mermaid
+flowchart TD
+    A[User Prompt] --> B[navigator_cli.py --mcp-server server.py]
+    B --> C[Spawn MCP server subprocess\nstdio transport]
+    C --> D[Discover tools via\nsession.list_tools]
+    D --> E[mcp_client.run_with_tools]
+    E --> F[Send prompt + tool schemas\nto NavigatorAI API]
+    F --> G{NavigatorAI API Response}
+    G -->|tool_calls| H[Call tools on MCP server\nvia session.call_tool]
+    H --> F
+    G -->|final text| I[Final Response\nprinted to stdout]
+
+    style A fill:#4a90d9,color:#fff
+    style G fill:#f5a623,color:#fff
+    style I fill:#7ed321,color:#fff
 ```
 
 ## Options Reference
