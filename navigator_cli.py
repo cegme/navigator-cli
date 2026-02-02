@@ -10,6 +10,7 @@ Usage:
 """
 
 import argparse
+import asyncio
 import os
 import sys
 import time
@@ -246,6 +247,12 @@ Examples:
         action="store_true",
         help="List available models and exit",
     )
+    parser.add_argument(
+        "--mcp-server",
+        type=str,
+        default=None,
+        help="Path to an MCP server script to enable tool use",
+    )
 
     args = parser.parse_args()
 
@@ -301,14 +308,31 @@ Examples:
 
     try:
         start_time = time.time()
-        response = query_llm(
-            prompt=prompt,
-            api_key=api_key,
-            model=args.model,
-            system_prompt=args.system,
-            use_cot=args.cot,
-            temperature=args.temperature,
-        )
+
+        if args.mcp_server:
+            from mcp_client import run_with_tools
+
+            if args.cot:
+                prompt = f"{prompt}\n\nLet's think step by step."
+
+            response = asyncio.run(run_with_tools(
+                server_script=args.mcp_server,
+                prompt=prompt,
+                api_key=api_key,
+                model=args.model,
+                system_prompt=args.system,
+                temperature=args.temperature,
+            ))
+        else:
+            response = query_llm(
+                prompt=prompt,
+                api_key=api_key,
+                model=args.model,
+                system_prompt=args.system,
+                use_cot=args.cot,
+                temperature=args.temperature,
+            )
+
         elapsed_time = time.time() - start_time
 
         # Output model name and time to stderr (unless quiet mode)
