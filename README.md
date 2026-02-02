@@ -12,6 +12,7 @@ The CLI supports direct prompting, Chain-of-Thought reasoning, custom system pro
 
 - [NavigatorAI Portal](https://it.ufl.edu/ai) - UF's AI platform
 - [Navigator Toolkit Documentation](https://docs.ai.it.ufl.edu/) - API documentation
+- [Function Calling](https://docs.ai.it.ufl.edu/docs/navigator_toolkit/capabilities/function_calling) - Function calling documentation
 - [NavigatorAI Chat](https://chat.ai.it.ufl.edu/) - Web interface
 - [Model Context Protocol](https://modelcontextprotocol.io/) - MCP specification
 
