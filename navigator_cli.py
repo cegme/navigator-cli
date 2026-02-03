@@ -253,6 +253,26 @@ Examples:
         default=None,
         help="Path to an MCP server script to enable tool use",
     )
+    parser.add_argument(
+        "--history",
+        nargs="?",
+        const=20,
+        type=int,
+        metavar="N",
+        help="Show last N queries (default: 20) and exit. Requires duckdb.",
+    )
+    parser.add_argument(
+        "--search",
+        type=str,
+        default=None,
+        metavar="TERM",
+        help="Search past queries for TERM and exit. Requires duckdb.",
+    )
+    parser.add_argument(
+        "--no-log",
+        action="store_true",
+        help="Skip logging this query to the history database",
+    )
 
     args = parser.parse_args()
 
@@ -290,6 +310,52 @@ Examples:
             logger.error("Could not connect to NavigatorAI API")
             if not args.quiet:
                 print("Error: Could not connect to NavigatorAI API.", file=sys.stderr)
+            sys.exit(1)
+
+    # Handle --history
+    if args.history is not None:
+        try:
+            from history import get_history
+
+            records = get_history(limit=args.history)
+            if not records:
+                print("No history found.")
+            else:
+                for rec in records:
+                    ts = rec["timestamp"].strftime("%Y-%m-%d %H:%M:%S")
+                    prompt_preview = rec["prompt"][:80]
+                    if len(rec["prompt"]) > 80:
+                        prompt_preview += "..."
+                    print(f"[{ts}] ({rec['model']}, {rec['elapsed_time']:.2f}s) {prompt_preview}")
+            sys.exit(0)
+        except ImportError:
+            print(
+                'Error: duckdb is not installed. Install with: uv add "navigator-cli[analytics]"',
+                file=sys.stderr,
+            )
+            sys.exit(1)
+
+    # Handle --search
+    if args.search is not None:
+        try:
+            from history import search_history
+
+            records = search_history(args.search)
+            if not records:
+                print(f"No results found for: {args.search}")
+            else:
+                for rec in records:
+                    ts = rec["timestamp"].strftime("%Y-%m-%d %H:%M:%S")
+                    prompt_preview = rec["prompt"][:80]
+                    if len(rec["prompt"]) > 80:
+                        prompt_preview += "..."
+                    print(f"[{ts}] ({rec['model']}, {rec['elapsed_time']:.2f}s) {prompt_preview}")
+            sys.exit(0)
+        except ImportError:
+            print(
+                'Error: duckdb is not installed. Install with: uv add "navigator-cli[analytics]"',
+                file=sys.stderr,
+            )
             sys.exit(1)
 
     # Get prompt from stdin or argument
@@ -351,6 +417,24 @@ Examples:
                 logger.info("Chain-of-Thought enabled")
 
         print(response)
+
+        # Log query to history database (unless --no-log)
+        if not args.no_log:
+            try:
+                from history import log_query
+
+                log_query(
+                    model=args.model,
+                    prompt=prompt,
+                    response=response,
+                    elapsed_time=elapsed_time,
+                    temperature=args.temperature,
+                    cot_enabled=args.cot,
+                    system_prompt=args.system,
+                )
+            except ImportError:
+                logger.debug("duckdb not installed, skipping history logging")
+
     except requests.exceptions.HTTPError as e:
         logger.error(f"API request failed: {e}")
         if not args.quiet:
