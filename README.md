@@ -250,14 +250,14 @@ uv run python -m navigator_cli \
 ```mermaid
 flowchart TD
     A[User Prompt] --> B[navigator_cli.py --mcp-server server.py]
-    B --> C[Spawn MCP server subprocess\nstdio transport]
-    C --> D[Discover tools via\nsession.list_tools]
+    B --> C[Spawn MCP server subprocess<br/>stdio transport]
+    C --> D[Discover tools via<br/>session.list_tools]
     D --> E[mcp_client.run_with_tools]
-    E --> F[Send prompt + tool schemas\nto NavigatorAI API]
+    E --> F[Send prompt + tool schemas<br/>to NavigatorAI API]
     F --> G{NavigatorAI API Response}
-    G -->|tool_calls| H[Call tools on MCP server\nvia session.call_tool]
+    G -->|tool_calls| H[Call tools on MCP server<br/>via session.call_tool]
     H --> F
-    G -->|final text| I[Final Response\nprinted to stdout]
+    G -->|final text| I[Final Response<br/>printed to stdout]
 
     style A fill:#4a90d9,color:#fff
     style G fill:#f5a623,color:#fff
