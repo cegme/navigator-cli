@@ -198,7 +198,8 @@ uv run python -m navigator_cli \
     "What are the statistics for the age column in mcp_servers/sample_data.csv?"
 ```
 
-### Writing Your Own MCP Server
+<details>
+<summary><h3>Writing Your Own MCP Server</h3></summary>
 
 Create a Python script that uses `FastMCP` to define tools. Each function decorated with `@mcp.tool()` becomes available to the LLM. The function's docstring is sent to the LLM as the tool description, so write it clearly.
 
@@ -241,7 +242,10 @@ uv run python -m navigator_cli \
     "What is the weather in Gainesville?"
 ```
 
-### MCP Architecture
+</details>
+
+<details>
+<summary><h3>MCP Architecture</h3></summary>
 
 ```mermaid
 flowchart TD
@@ -260,7 +264,10 @@ flowchart TD
     style I fill:#7ed321,color:#fff
 ```
 
-## Options Reference
+</details>
+
+<details>
+<summary><h2>Options Reference</h2></summary>
 
 | Option | Short | Default | Description |
 |--------|-------|---------|-------------|
@@ -274,6 +281,8 @@ flowchart TD
 | `--stdin` | | off | Read the prompt from stdin instead of a positional argument |
 | `--verbose` | `-v` | off | Enable debug logging to stdout |
 | `--quiet` | `-q` | off | Suppress all output except the LLM response |
+
+</details>
 
 ## Project Structure
 
