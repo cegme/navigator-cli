@@ -284,7 +284,8 @@ flowchart TD
 
 </details>
 
-## Project Structure
+<details>
+<summary><h2>Project Structure</h2></summary>
 
 ```
 navigator-cli/
@@ -303,7 +304,10 @@ navigator-cli/
 └── README.md
 ```
 
-## Examples for Class Demo
+</details>
+
+<details>
+<summary><h2>Examples for Class Demo</h2></summary>
 
 ### Compare Zero-Shot vs Chain-of-Thought
 
@@ -354,7 +358,10 @@ uv run python -m navigator_cli -v \
     "Get the statistics for the score column in mcp_servers/sample_data.csv"
 ```
 
-## Running Tests
+</details>
+
+<details>
+<summary><h2>Running Tests</h2></summary>
 
 ```bash
 # Install dev dependencies
@@ -379,7 +386,10 @@ uv run pytest tests/test_csv_tools.py::TestCsvStats -v
 All tests mock API calls, so no API key is needed to run them.
 The CSV tool tests use the bundled `mcp_servers/sample_data.csv` file and `tmp_path` fixtures for edge cases.
 
-## Troubleshooting
+</details>
+
+<details>
+<summary><h2>Troubleshooting</h2></summary>
 
 **Error: NAVIGATOR_API_KEY not set**
 - Make sure you have a `.env` file with your API key
@@ -397,3 +407,5 @@ The CSV tool tests use the bundled `mcp_servers/sample_data.csv` file and `tmp_p
 - Verify the server script path is correct
 - Run `uv sync` to ensure the `mcp` package is installed
 - Test the server directly: `uv run python -c "from mcp_servers.csv_tools import read_csv_file; print(read_csv_file('mcp_servers/sample_data.csv'))"`
+
+</details>
