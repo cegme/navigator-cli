@@ -116,13 +116,13 @@ This prints a table of model IDs, owners, and creation dates.
 
 ### Verbose and Quiet Modes
 
-Verbose mode (`-v`) enables debug logging to stdout, showing request details, timing, and prompt information. Quiet mode (`-q`) suppresses all output except the LLM response.
+Verbose mode (`-v`) enables debug logging to stdout, showing request details, timing, and prompt information. Quiet mode (`-q`) suppresses all CLI output (metadata, errors, logging) except the LLM response. Note that `-q` only affects the CLI's own output. It does not instruct the LLM to be concise. The LLM may still produce verbose responses, debugging information, or explanations. To get shorter responses from the LLM, use a system prompt like `--system "Be brief."`.
 
 ```bash
 # See debug details
 uv run python -m navigator_cli -v "Debug this query"
 
-# Only the response, no metadata
+# Only the response, no CLI metadata (LLM output unchanged)
 uv run python -m navigator_cli -q "Just the answer please"
 ```
 
@@ -280,7 +280,7 @@ flowchart TD
 | `--mcp-server` | | none | Path to an MCP server script to enable tool use |
 | `--stdin` | | off | Read the prompt from stdin instead of a positional argument |
 | `--verbose` | `-v` | off | Enable debug logging to stdout |
-| `--quiet` | `-q` | off | Suppress all output except the LLM response |
+| `--quiet` | `-q` | off | Suppress CLI output (metadata, errors) except the LLM response |
 
 </details>
 

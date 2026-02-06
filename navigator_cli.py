@@ -240,7 +240,7 @@ Examples:
     parser.add_argument(
         "--quiet", "-q",
         action="store_true",
-        help="Only output the LLM response (suppress all other output)",
+        help="Suppress CLI output (metadata, errors) but not the LLM response content",
     )
     parser.add_argument(
         "--list-models", "-l",
